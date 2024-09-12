@@ -99,6 +99,7 @@ app_code = f"""
 from databricks import sql
 from databricks.sdk.core import Config
 import streamlit as st
+import streamlit.components.v1 as components
 import numpy as np
 import pandas as pd
 import plotly.express as px
@@ -187,21 +188,24 @@ data = get_uc_df()
 count_data = data.groupby(['nation','market_segment']).size().reset_index(name='count')
 
 
-tab1, tab2, tab3, tab4, tab5, tab6 = st.tabs(["Full Data :bookmark_tabs:",
-                      "Visualized Data :bar_chart:",
+tab1, tab2, tab3, tab4, tab5, tab6 = st.tabs(["Data + Visualization :bookmark_tabs: :bar_chart:",
+                      "AI/BI Dashboard :yum:",
                       "Headers :dove_of_peace:",
                       "Cookies :cookie:",
                       "Environment :computer:",
-                      "Service Principal :robot_face:"])
+                      "Service Principal :robot_face:",
+                      ])
 
 with tab1:
     st.subheader("Full Data", divider="violet")
     st.dataframe(data=data, height=400, use_container_width=True)
-
-with tab2:
     st.subheader("Visualized Data", divider="violet")
     fig = px.bar(count_data, x='nation', y='count', color='market_segment', barmode='group')
     st.plotly_chart(fig)
+
+with tab2:
+    st.subheader("AI/BI Dashboard", divider="violet")
+    components.iframe("https://e2-demo-field-eng.cloud.databricks.com/embed/dashboardsv3/01ef387dbd121b11880abac097727114?o=1444828305810485&f_01ef6f70f42c133c9f4f6560a649a12c=_all_", height=1050, scrolling=True)
 
 with tab3:
     st.subheader("Captured Headers", divider="violet")

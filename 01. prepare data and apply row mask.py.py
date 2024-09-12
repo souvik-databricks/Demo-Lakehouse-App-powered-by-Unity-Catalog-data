@@ -81,7 +81,7 @@ display(
     spark.sql(
         f"""
 CREATE
-OR REPLACE FUNCTION main.{schema}.uc_mask_row_filter_func(nation_param STRING) RETURN (
+OR REPLACE FUNCTION main.{schema}.{user}_uc_mask_row_filter_func(nation_param STRING) RETURN (
   (
     current_user() == "{user_email}" AND nation_param == "INDIA"
   )
@@ -95,11 +95,11 @@ OR REPLACE FUNCTION main.{schema}.uc_mask_row_filter_func(nation_param STRING) R
 )
 display(
     spark.sql(
-        f"GRANT ALL PRIVILEGES ON FUNCTION main.{schema}.uc_mask_row_filter_func TO `account users`;"
+        f"GRANT ALL PRIVILEGES ON FUNCTION main.{schema}.{user}_uc_mask_row_filter_func TO `account users`;"
     )
 )
 display(
     spark.sql(
-        f"ALTER TABLE {table_name} SET ROW FILTER main.{schema}.uc_mask_row_filter_func ON (nation);"
+        f"ALTER TABLE {table_name} SET ROW FILTER main.{schema}.{user}_uc_mask_row_filter_func ON (nation);"
     )
 )
