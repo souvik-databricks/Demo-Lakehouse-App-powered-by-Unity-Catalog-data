@@ -45,7 +45,7 @@ headers = cfg.authenticate()
 
 # COMMAND ----------
 
-url = host + "/api/2.0/preview/apps"
+url = host + "/api/2.0/apps"
 data = {
   "name": app_name,
   "description": app_description,
@@ -63,13 +63,14 @@ response.json()
 
 # COMMAND ----------
 
-url = host + f"/api/2.0/preview/apps/{app_name}"
+url = host + f"/api/2.0/apps/{app_name}"
 
 for _ in range(10):
     time.sleep(2)
     response = requests.get(url, headers=headers)
     response_dict = json.loads(response.text)
-    if response_dict.get("status").get("state") != "CREATING":
+    # print(f"Status: ", response_dict)
+    if response_dict.get("compute_status").get("state") == "ACTIVE":
         break
 response_dict
 
@@ -90,7 +91,7 @@ response_dict
 
 # COMMAND ----------
 
-url = host + f"/api/2.0/preview/apps/{app_name}/deployments"
+url = host + f"/api/2.0/apps/{app_name}/deployments"
 data = {
   "source_code_path": app_dir,
   # "mode": "AUTO_SYNC" # SNAPSHOT is default and AUTO_SYNC is a private preview
@@ -111,17 +112,19 @@ response_dict
 
 # COMMAND ----------
 
-url = host + f"/api/2.0/preview/apps/{app_name}/deployments/{deployment_id}"
+url = host + f"/api/2.0/apps/{app_name}/deployments/{deployment_id}"
 
 for _ in range(60):
     time.sleep(5)
     response = requests.get(url, headers=headers)
     response_dict = json.loads(response.text)
-    if response_dict.get("status").get("state") != "IN_PROGRESS":
+    # response_dict
+    if response_dict.get("status").get("state") == "SUCCEEDED":
+        print(f"Deployment of the app '{app_name}' completed. Status: ", response_dict.get("status").get("state"))
         break
     else:
-        print("Deployment in progress. Status: ", response_dict.get("status").get("state"))
-response_dict
+        print(f"Deployment of the app '{app_name}' in progress. Status: ", response_dict.get("status").get("state"))
+
 
 # COMMAND ----------
 
@@ -130,10 +133,12 @@ response_dict
 
 # COMMAND ----------
 
-url = host + f"/api/2.0/preview/apps/{app_name}"
+url = host + f"/api/2.0/apps/{app_name}"
 
 response = requests.get(url, headers=headers)
 response.json()
+response_dict = json.loads(response.text)
+print(f"Deployment of the app '{app_name}' is ready at", response_dict.get("url"))
 
 # COMMAND ----------
 
